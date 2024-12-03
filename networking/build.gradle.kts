@@ -50,7 +50,7 @@ dependencies {
 
     dependencies {
         implementation("com.github.chuckerteam.chucker:library:4.0.0") {
-            exclude(group = "com.github.chuckerteam.chucker", module = "library-no-op")
+            exclude(group = "com.github.chuckerteam.chucker", module = "library")
         }
     }
 
