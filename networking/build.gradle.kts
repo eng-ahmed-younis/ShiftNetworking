@@ -25,11 +25,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
@@ -72,10 +72,10 @@ afterEvaluate {
             create<MavenPublication>("maven") {
                 from(components["release"])
                 //com.github.<<your GitHub user name>>
-                groupId = "com.github.eng-ahmed-younis"
+                groupId = "com.core"
                 //name of your library.
                 artifactId = "shift-networking"
-                version = "1.1"
+                version = "1.2"
             }
         }
     }
