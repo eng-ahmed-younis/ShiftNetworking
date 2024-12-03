@@ -60,9 +60,9 @@ afterEvaluate {
         publications {
             create<MavenPublication>("maven") {
                 from(components["release"])
-                groupId = "com.core"
+                groupId = "com.github.eng-ahmed-younis"
                 artifactId = "shift-networking"
-                version = "1.1.1"
+                version = "1.1.2"
             }
         }
     }
