@@ -44,15 +44,30 @@ dependencies {
 
 
     // Chucker Dependency for network logging
-    implementation (libs.library )// Replace with the latest version
-    debugImplementation (libs.library)
-    releaseImplementation (libs.library.no.op)
+    implementation(libs.library)// Replace with the latest version
+    debugImplementation(libs.library)
+    releaseImplementation(libs.library.no.op)
+
+    dependencies {
+        implementation("com.github.chuckerteam.chucker:library:4.0.0") {
+            exclude(group = "com.github.chuckerteam.chucker", module = "library-no-op")
+        }
+    }
+
 
 }
 
+configurations.all {
+    resolutionStrategy {
+
+        force("com.github.chuckerteam.chucker:library:4.0.0")
+    }
+}
+
+
 afterEvaluate {
 
-    publishing{
+    publishing {
         publications {
             create<MavenPublication>("maven") {
                 from(components["release"])
@@ -60,7 +75,7 @@ afterEvaluate {
                 groupId = "com.github.eng-ahmed-younis"
                 //name of your library.
                 artifactId = "shift-networking"
-                version = "1.0"
+                version = "1.1"
             }
         }
     }
