@@ -75,7 +75,7 @@ afterEvaluate {
                 groupId = "com.core"
                 //name of your library.
                 artifactId = "shift-networking"
-                version = "1.2"
+                version = "1.1.0"
             }
         }
     }
