@@ -24,58 +24,45 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = "17"
     }
 }
 
 dependencies {
-
+    // Core dependencies
     implementation(libs.okhttp)
     implementation(libs.retrofit)
     implementation(libs.gson)
-    implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
 
-
     // Chucker Dependency for network logging
-    implementation(libs.library)// Replace with the latest version
-    debugImplementation(libs.library)
-    releaseImplementation(libs.library.no.op)
-
-    dependencies {
-        implementation("com.github.chuckerteam.chucker:library:4.0.0") {
-            exclude(group = "com.github.chuckerteam.chucker", module = "library")
-        }
-    }
-
-
+    debugImplementation("com.github.chuckerteam.chucker:library:4.0.0") // For debug builds
+    releaseImplementation("com.github.chuckerteam.chucker:library-no-op:4.0.0") // For release builds (no-op version)
 }
 
 configurations.all {
     resolutionStrategy {
-
-        force("com.github.chuckerteam.chucker:library:4.0.0")
+        // If you want to force a specific version of a dependency, you can add it here, but it's not necessary for Chucker
+        // force("com.github.chuckerteam.chucker:library:4.0.0")
     }
 }
 
-
 afterEvaluate {
-
     publishing {
         publications {
             create<MavenPublication>("maven") {
                 from(components["release"])
-                //com.github.<<your GitHub user name>>
                 groupId = "com.core"
-                //name of your library.
                 artifactId = "shift-networking"
-                version = "1.1.0"
+                version = "1.1.1"
             }
         }
     }
