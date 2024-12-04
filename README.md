@@ -4,7 +4,7 @@ A Kotlin-based Android library to simplify network configurations and API servic
 
 ## Features
 
-- **Customizable Network Configurations**: Set timeouts, headers, query parameters, and interceptors.
+- ****Customizable Network Configurations**: Set timeouts, headers, query parameters, and interceptors.
 - **Easy Integration with Retrofit**: Create and manage Retrofit services.
 - **Support for Logging**: Integrated logging with `HttpLoggingInterceptor` and Chucker for real-time monitoring.
 - **Flexible API Service Creation**: Supports dynamic API services with easy initialization.
