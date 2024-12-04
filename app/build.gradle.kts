@@ -58,6 +58,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation( project(":networking"))
+   // implementation ("com.github.eng-ahmed-younis:ShiftNetworking:1.1.4")
+
 
 
 }
