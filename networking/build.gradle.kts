@@ -62,7 +62,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.eng-ahmed-younis"
                 artifactId = "shift-networking"
-                version = "1.1.6"
+                version = "1.1.7"
             }
 
 

@@ -7,17 +7,27 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
-// Data class to hold all configuration options for network requests
+/**
+ * NetworkConfig Class
+ *
+ * Created by Ahmed Aly.
+ *
+ * This class is responsible for configuring network settings, including timeouts, headers,
+ * query parameters, interceptors, and logging behavior for making network requests.
+ *
+ * It provides methods to customize and build the OkHttpClient used for network calls.
+ */
+
 data class NetworkConfig(
     val baseUrl: String, // The base URL for API requests (required)
-    val connectionTimeout: Long = 70L, // Timeout duration for establishing a connection (default 70s)
-    val readTimeout: Long = 70L, // Timeout duration for reading from the connection (default 70s)
-    val writeTimeout: Long = 120L, // Timeout duration for writing to the connection (default 120s)
-    val isLoggingEnabled: Boolean = false, // Flag to enable/disable HTTP request/response logging (default is false)
-    val headers: MutableMap<String, String> = mutableMapOf(), // Optional headers to be added to every request
-    val queryParameters: MutableMap<String, String> = mutableMapOf(), // Optional query parameters to be added to each request URL
-    val applicationInterceptor: List<Interceptor> = listOf(), // List of application-level interceptors (e.g., authentication interceptors)
-    val networkInterceptor: List<Interceptor> = listOf() // List of network-level interceptors (e.g., caching interceptors)
+    private val connectionTimeout: Long = 70L, // Timeout duration for establishing a connection (default 70s)
+    private val readTimeout: Long = 70L, // Timeout duration for reading from the connection (default 70s)
+    private val writeTimeout: Long = 120L, // Timeout duration for writing to the connection (default 120s)
+    private val isLoggingEnabled: Boolean = false, // Flag to enable/disable HTTP request/response logging (default is false)
+    private val headers: MutableMap<String, String> = mutableMapOf(), // Optional headers to be added to every request
+    private val queryParameters: MutableMap<String, String> = mutableMapOf(), // Optional query parameters to be added to each request URL
+    private val applicationInterceptor: List<Interceptor> = listOf(), // List of application-level interceptors (e.g., authentication interceptors)
+    private val networkInterceptor: List<Interceptor> = listOf() // List of network-level interceptors (e.g., caching interceptors)
 ) {
 
     // Lazy initialization of OkHttpClient builder to prevent unnecessary object creation
