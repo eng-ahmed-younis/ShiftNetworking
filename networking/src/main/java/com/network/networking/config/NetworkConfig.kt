@@ -7,78 +7,81 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
-
+// Data class to hold all configuration options for network requests
 data class NetworkConfig(
-    val baseUrl: String,
-    val connectionTimeout: Long = 70L,
-    val readTimeout: Long = 70L,
-    val writeTimeout: Long = 120L,
-    val enableLogging: Boolean = false,
-    val headers: MutableMap<String, String> = mutableMapOf(),// Optional headers || dynamic headers
-    val queryParameters: MutableMap<String, String> = mutableMapOf(), // Optional query parameters || dynamic query parameters
-    val applicationInterceptor: List<Interceptor> = listOf(), // Optional application interceptors
-    val networkInterceptor: List<Interceptor> = listOf() // Optional network interceptors
+    val baseUrl: String, // The base URL for API requests (required)
+    val connectionTimeout: Long = 70L, // Timeout duration for establishing a connection (default 70s)
+    val readTimeout: Long = 70L, // Timeout duration for reading from the connection (default 70s)
+    val writeTimeout: Long = 120L, // Timeout duration for writing to the connection (default 120s)
+    val isLoggingEnabled: Boolean = false, // Flag to enable/disable HTTP request/response logging (default is false)
+    val headers: MutableMap<String, String> = mutableMapOf(), // Optional headers to be added to every request
+    val queryParameters: MutableMap<String, String> = mutableMapOf(), // Optional query parameters to be added to each request URL
+    val applicationInterceptor: List<Interceptor> = listOf(), // List of application-level interceptors (e.g., authentication interceptors)
+    val networkInterceptor: List<Interceptor> = listOf() // List of network-level interceptors (e.g., caching interceptors)
 ) {
 
+    // Lazy initialization of OkHttpClient builder to prevent unnecessary object creation
     private val okhttpBuilder by lazy {
         OkHttpClient.Builder()
-            .readTimeout(readTimeout, TimeUnit.SECONDS)
-            .writeTimeout(writeTimeout, TimeUnit.SECONDS)
-            .connectTimeout(connectionTimeout, TimeUnit.SECONDS)
+            .readTimeout(readTimeout, TimeUnit.SECONDS) // Set the read timeout duration
+            .writeTimeout(writeTimeout, TimeUnit.SECONDS) // Set the write timeout duration
+            .connectTimeout(connectionTimeout, TimeUnit.SECONDS) // Set the connection timeout duration
     }
 
+    // Lazy initialization of the logging interceptor (if enabled)
     private val loggingInterceptor by lazy {
         HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.HEADERS
-            level = HttpLoggingInterceptor.Level.BODY
-            level = HttpLoggingInterceptor.Level.BASIC
+            // Choose the logging level based on whether logging is enabled
+            level = if (isLoggingEnabled) {
+                HttpLoggingInterceptor.Level.BODY // Log both request and response body if logging is enabled
+            } else {
+                HttpLoggingInterceptor.Level.NONE // Disable logging if not enabled
+            }
         }
     }
 
-    // build okhttp client with attacked interceptor
+    // Method to build and return an OkHttpClient instance with applied configurations
     internal fun buildOkHttpClient(context: Context): OkHttpClient {
-
         val clientBuilder = okhttpBuilder
 
-        // Add logging and Chucker interceptors if logging is enabled
-        if (enableLogging){
+        // If logging is enabled, add both the logging and Chucker interceptors
+        if (isLoggingEnabled) {
             clientBuilder
-                .addInterceptor(loggingInterceptor)
-                .addInterceptor(ChuckerInterceptor.Builder(context).build())
+                .addInterceptor(loggingInterceptor) // Add the logging interceptor for HTTP request/response logging
+                .addInterceptor(ChuckerInterceptor.Builder(context).build()) // Add Chucker for network traffic inspection
         }
 
+        // Add an interceptor to attach query parameters and headers to the request before it is sent
         clientBuilder.addInterceptor { chain ->
-            val originalRequest  =  chain.request()
-            val originalUrl = originalRequest.url
+            val originalRequest = chain.request() // The original request object
+            val originalUrl = originalRequest.url // Get the original URL of the request
 
-            // add query parameters to url
+            // Build a new URL by adding any query parameters defined in the configuration
             val updatedUrl = originalUrl.newBuilder().apply {
-                queryParameters.forEach { (key , value) ->
-                    addQueryParameter(key,value)
+                queryParameters.forEach { (key, value) ->
+                    addQueryParameter(key, value) // Add each query parameter to the URL
                 }
             }.build()
 
-
-            // Add headers to the request
+            // Build a new request by adding the headers and the updated URL to the original request
             val updatedRequest = originalRequest.newBuilder().apply {
                 headers.forEach { (key, value) ->
-                    addHeader(key, value)
+                    addHeader(key, value) // Add each header to the request
                 }
-                url(updatedUrl)
+                url(updatedUrl) // Set the updated URL with query parameters
             }.build()
 
+            // Proceed with the request chain using the updated request
             chain.proceed(updatedRequest)
-
         }
 
-
-        // Add user-defined application interceptors
+        // Add any custom application interceptors to the client builder
         applicationInterceptor.forEach { clientBuilder.addInterceptor(it) }
 
-        // Add user-defined network interceptors
+        // Add any custom network interceptors to the client builder
         networkInterceptor.forEach { clientBuilder.addNetworkInterceptor(it) }
 
+        // Finally, build and return the OkHttpClient with all the configurations applied
         return clientBuilder.build()
-
     }
 }

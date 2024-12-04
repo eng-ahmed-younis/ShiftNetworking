@@ -2,7 +2,7 @@ package com.network.networking.config
 
 import okhttp3.Interceptor
 
-class NetworkBuilder(
+class NetworkConfigBuilder(
     private val baseUrl: String
 ) {
     private var connectionTimeout: Long = 70L
@@ -37,7 +37,7 @@ class NetworkBuilder(
             connectionTimeout = connectionTimeout,
             readTimeout = readTimeout,
             writeTimeout = writeTimeout,
-            enableLogging = enableLogging,
+            isLoggingEnabled = enableLogging,
             headers = headers,
             queryParameters = queryParameters,
             applicationInterceptor = applicationInterceptor,
