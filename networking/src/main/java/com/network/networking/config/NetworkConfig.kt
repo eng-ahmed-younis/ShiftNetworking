@@ -23,6 +23,7 @@ data class NetworkConfig(
     private val connectionTimeout: Long = 70L, // Timeout duration for establishing a connection (default 70s)
     private val readTimeout: Long = 70L, // Timeout duration for reading from the connection (default 70s)
     private val writeTimeout: Long = 120L, // Timeout duration for writing to the connection (default 120s)
+    private val isChuckerInterceptorEnabled: Boolean = false, // Flag to enable/disable Chucker interceptor (default is false)
     private val isLoggingEnabled: Boolean = false, // Flag to enable/disable HTTP request/response logging (default is false)
     private val headers: MutableMap<String, String> = mutableMapOf(), // Optional headers to be added to every request
     private val queryParameters: MutableMap<String, String> = mutableMapOf(), // Optional query parameters to be added to each request URL
@@ -55,10 +56,20 @@ data class NetworkConfig(
         val clientBuilder = okhttpBuilder
 
         // If logging is enabled, add both the logging and Chucker interceptors
-        if (isLoggingEnabled) {
-            clientBuilder
-                .addInterceptor(loggingInterceptor) // Add the logging interceptor for HTTP request/response logging
-                .addInterceptor(ChuckerInterceptor.Builder(context).build()) // Add Chucker for network traffic inspection
+        when{
+            (isLoggingEnabled && isChuckerInterceptorEnabled) -> {
+                clientBuilder
+                    .addInterceptor(loggingInterceptor) // Add the logging interceptor for HTTP request/response logging
+                    .addInterceptor(ChuckerInterceptor.Builder(context).build()) // Add Chucker for network traffic inspection
+            }
+            (isLoggingEnabled && !isChuckerInterceptorEnabled) -> {
+                clientBuilder
+                    .addInterceptor(loggingInterceptor) // Add the logging interceptor for HTTP request/response logging
+            }
+            (!isLoggingEnabled && isChuckerInterceptorEnabled) -> {
+                clientBuilder
+                    .addInterceptor(ChuckerInterceptor.Builder(context).build()) // Add Chucker for network traffic inspection
+            }
         }
 
         // Add an interceptor to attach query parameters and headers to the request before it is sent
@@ -94,4 +105,5 @@ data class NetworkConfig(
         // Finally, build and return the OkHttpClient with all the configurations applied
         return clientBuilder.build()
     }
+
 }

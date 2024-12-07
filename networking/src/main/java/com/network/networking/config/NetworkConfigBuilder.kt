@@ -9,6 +9,7 @@ class NetworkConfigBuilder(
     private var readTimeout: Long = 70L
     private var writeTimeout: Long = 120L
     private var enableLogging: Boolean = false
+    private var enableChucker: Boolean = false
     private val headers: MutableMap<String, String> = mutableMapOf()
     private val queryParameters: MutableMap<String, String> = mutableMapOf()
     private val applicationInterceptor: MutableList<Interceptor> = mutableListOf()
@@ -20,6 +21,7 @@ class NetworkConfigBuilder(
     fun setReadTimeout(timeout: Long) = apply { this.readTimeout = timeout }
     fun setWriteTimeout(timeout: Long) = apply { this.writeTimeout = timeout }
     fun enableLogging(enable: Boolean) = apply { this.enableLogging = enable }
+    fun enableChucker(enable: Boolean) = apply { this.enableChucker = enable }
     fun addHeader(key: String, value: String) = apply { this.headers[key] = value }
     fun addQueryParameter(key: String, value: String) = apply { this.queryParameters[key] = value }
     fun addApplicationInterceptor(interceptor: Interceptor) =
@@ -38,6 +40,7 @@ class NetworkConfigBuilder(
             readTimeout = readTimeout,
             writeTimeout = writeTimeout,
             isLoggingEnabled = enableLogging,
+            isChuckerInterceptorEnabled = enableChucker,
             headers = headers,
             queryParameters = queryParameters,
             applicationInterceptor = applicationInterceptor,
