@@ -12,7 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.network.app.ui.theme.CoreNetworkingTheme
-import com.network.networking.config.NetworkConfig
+import com.network.networking.NetworkManager
+import com.network.networking.core.NetworkConfig
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +30,10 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        val config = NetworkConfig.Builder("https://jsonplaceholder.typicode.com/")
+            .build()
+
+        val initializer = NetworkManager().init(config, context = this)
 
     }
 }

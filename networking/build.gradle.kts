@@ -46,6 +46,7 @@ dependencies {
     // Chucker Dependency for network logging
     debugImplementation(libs.library) // For debug builds
     releaseImplementation(libs.library.no.op) // For release builds (no-op version)
+    implementation(libs.timber)
 }
 
 configurations.all {
@@ -62,7 +63,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.eng-ahmed-younis"
                 artifactId = "shift-networking"
-                version = "1.1.8"
+                version = "1.1.9"
             }
 
 

@@ -1,4 +1,4 @@
-package com.network.networking.config
+package com.network.networking.core
 
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
@@ -36,7 +36,10 @@ data class NetworkConfig(
         OkHttpClient.Builder()
             .readTimeout(readTimeout, TimeUnit.SECONDS) // Set the read timeout duration
             .writeTimeout(writeTimeout, TimeUnit.SECONDS) // Set the write timeout duration
-            .connectTimeout(connectionTimeout, TimeUnit.SECONDS) // Set the connection timeout duration
+            .connectTimeout(
+                connectionTimeout,
+                TimeUnit.SECONDS
+            ) // Set the connection timeout duration
     }
 
     // Lazy initialization of the logging interceptor (if enabled)
@@ -56,19 +59,25 @@ data class NetworkConfig(
         val clientBuilder = okhttpBuilder
 
         // If logging is enabled, add both the logging and Chucker interceptors
-        when{
+        when {
             (isLoggingEnabled && isChuckerInterceptorEnabled) -> {
                 clientBuilder
                     .addInterceptor(loggingInterceptor) // Add the logging interceptor for HTTP request/response logging
-                    .addInterceptor(ChuckerInterceptor.Builder(context).build()) // Add Chucker for network traffic inspection
+                    .addInterceptor(
+                        ChuckerInterceptor.Builder(context).build()
+                    ) // Add Chucker for network traffic inspection
             }
+
             (isLoggingEnabled && !isChuckerInterceptorEnabled) -> {
                 clientBuilder
                     .addInterceptor(loggingInterceptor) // Add the logging interceptor for HTTP request/response logging
             }
+
             (!isLoggingEnabled && isChuckerInterceptorEnabled) -> {
                 clientBuilder
-                    .addInterceptor(ChuckerInterceptor.Builder(context).build()) // Add Chucker for network traffic inspection
+                    .addInterceptor(
+                        ChuckerInterceptor.Builder(context).build()
+                    ) // Add Chucker for network traffic inspection
             }
         }
 
@@ -104,6 +113,61 @@ data class NetworkConfig(
 
         // Finally, build and return the OkHttpClient with all the configurations applied
         return clientBuilder.build()
+    }
+
+
+    class Builder(
+        private val baseUrl: String
+    ) {
+        private var connectionTimeout: Long = 70L
+        private var readTimeout: Long = 70L
+        private var writeTimeout: Long = 120L
+        private var enableLogging: Boolean = false
+        private var enableChucker: Boolean = false
+        private val headers: MutableMap<String, String> = mutableMapOf()
+        private val queryParameters: MutableMap<String, String> = mutableMapOf()
+        private val applicationInterceptor: MutableList<Interceptor> = mutableListOf()
+        private val networkInterceptor: MutableList<Interceptor> = mutableListOf()
+
+
+        // Setters for each property
+        fun setConnectionTimeout(timeout: Long) = apply { this.connectionTimeout = timeout }
+        fun setReadTimeout(timeout: Long) = apply { this.readTimeout = timeout }
+        fun setWriteTimeout(timeout: Long) = apply { this.writeTimeout = timeout }
+        fun enableLogging(enable: Boolean) = apply { this.enableLogging = enable }
+        fun enableChucker(enable: Boolean) = apply { this.enableChucker = enable }
+        fun addHeader(key: String, value: String) = apply { this.headers[key] = value }
+        fun addQueryParameter(key: String, value: String) =
+            apply { this.queryParameters[key] = value }
+
+        fun addApplicationInterceptor(interceptor: Interceptor) =
+            apply { this.applicationInterceptor.add(interceptor) }
+
+        fun addNetworkInterceptor(interceptor: Interceptor) =
+            apply { this.networkInterceptor.add(interceptor) }
+
+
+        // Build method to create the NetworkConfig instance
+        fun build(): NetworkConfig {
+            return NetworkConfig(
+                baseUrl = baseUrl,
+                connectionTimeout = connectionTimeout,
+                readTimeout = readTimeout,
+                writeTimeout = writeTimeout,
+                isLoggingEnabled = enableLogging,
+                isChuckerInterceptorEnabled = enableChucker,
+                headers = headers,
+                queryParameters = queryParameters,
+                applicationInterceptor = applicationInterceptor,
+                networkInterceptor = networkInterceptor
+            ).run {
+                // We use run here to operate on the object itself if needed
+                // For example, logging the final configuration before returning
+                println("NetworkConfig built with baseUrl: $baseUrl")
+                this // return the NetworkConfig instance
+            }
+        }
+
     }
 
 }

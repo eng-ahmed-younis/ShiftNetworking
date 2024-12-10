@@ -1,7 +1,8 @@
 package com.network.networking.getaway
 
 import android.content.Context
-import com.network.networking.config.NetworkConfig
+import com.network.networking.adapters.NetworkResultCallAdapterFactory
+import com.network.networking.core.NetworkConfig
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -39,6 +40,7 @@ class ApiGateway private constructor(retrofit: Retrofit) {
                 .baseUrl(config.baseUrl) // Set the base URL for API requests
                 .client(client) // Set the OkHttpClient for network calls
                 .addConverterFactory(GsonConverterFactory.create()) // Add Gson as the converter factory for JSON responses
+                .addCallAdapterFactory(NetworkResultCallAdapterFactory.create()) // Add NetworkResultCallAdapterFactory for handling API responses
                 .build() // Build the Retrofit instance
 
             return ApiGateway(retrofit) // Return an instance of ApiGateway with the Retrofit instance

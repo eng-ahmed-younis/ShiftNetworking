@@ -1,14 +1,14 @@
 package com.network.networking
 
 import android.content.Context
-import com.network.networking.config.NetworkConfig
+import com.network.networking.core.NetworkConfig
 import com.network.networking.getaway.ApiGateway
 
 /**
  * NetworkInitializer is responsible for initializing the network layer,
  * including setting up the ApiGateway and providing services for network operations.
  */
-class NetworkInitializer {
+class NetworkManager {
 
     // Private reference to the ApiGateway instance, which is lazily initialized to ensure it's only set up once.
     private var apiGateway: ApiGateway? = null
@@ -21,9 +21,9 @@ class NetworkInitializer {
      *
      * @param config The network configuration containing details such as base URL, timeouts, headers, etc.
      * @param context The application context, which may be required for network interceptors or other setup.
-     * @return The current instance of [NetworkInitializer] to allow for method chaining.
+     * @return The current instance of [NetworkManager] to allow for method chaining.
      */
-    fun init(config: NetworkConfig, context: Context): NetworkInitializer {
+    fun init(config: NetworkConfig, context: Context): NetworkManager {
         // Initialize ApiGateway only if it's not already initialized.
         if (apiGateway == null) {
             apiGateway = ApiGateway.initialize(config, context)
@@ -41,7 +41,7 @@ class NetworkInitializer {
      *
      * @param serviceClass The class type of the service to create an instance of.
      * @return A service instance of type [T].
-     * @throws IllegalStateException If the [NetworkInitializer] has not been initialized.
+     * @throws IllegalStateException If the [NetworkManager] has not been initialized.
      */
     fun <T> createService(serviceClass: Class<T>): T {
         // Ensure ApiGateway is initialized before attempting to create a service.
